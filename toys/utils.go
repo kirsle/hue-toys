@@ -2,6 +2,7 @@ package toys
 
 import (
 	"math/rand"
+	"sort"
 	"time"
 
 	hue "github.com/collinux/gohue"
@@ -15,8 +16,25 @@ func AllLights(c registry.RuntimeConfig, fn func(hue.Light)) error {
 		return err
 	}
 
+	// The lights given by the Go API are given in random order; for
+	// predictability sort them by their indexes. For lookup later, group
+	// the lights by index too.
+	byIndex := map[int][]hue.Light{}
+	indices := []int{}
 	for _, light := range lights {
-		fn(light)
+		if _, ok := byIndex[light.Index]; !ok {
+			byIndex[light.Index] = []hue.Light{}
+		}
+		indices = append(indices, light.Index)
+		byIndex[light.Index] = append(byIndex[light.Index], light)
+	}
+	sort.Ints(indices)
+
+	// Run their functions in order.
+	for _, index := range indices {
+		for _, light := range byIndex[index] {
+			fn(light)
+		}
 	}
 
 	return nil

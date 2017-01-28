@@ -42,9 +42,23 @@ Options include:
 
 ## Toys
 
+* `noop`: do nothing but change the brightness (with `-b`).
+
 * `on`: turns on all the lights.
 
 * `off`: turns off all the lights.
+
+* `set`: set the lights in series to a list of colors.
+
+  Example:
+
+  ```
+  hue-toys -t set red green blue
+  ```
+
+  The lights will be set according to the colors listed in order (by their
+  index number). In case there are more lights than colors, the list will
+  loop again from the beginning until every light has been assigned a color.
 
 * `random`: turns on all the lights set to random colors for each.
 

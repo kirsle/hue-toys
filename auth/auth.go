@@ -4,21 +4,25 @@ package auth
 import (
 	"bufio"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log"
 	"os"
 
 	hue "github.com/collinux/gohue"
+	"github.com/kirsle/configdir"
 )
 
-const (
-	// The file name we store the credentials in.
-	CREDENTIALS = "credentials.json"
+// An app name for the user registration.
+const DEVICE_TYPE = "hue-toys"
 
-	// An app name for the user registration.
-	DEVICE_TYPE = "hue-toys"
-)
+// The file we store the credentials in.
+var CREDENTIALS string
+
+func init() {
+	// Make sure the configuration path exists.
+	configdir.MakePath(configdir.LocalConfig())
+	CREDENTIALS = configdir.LocalConfig("kirsle", "hue-toys", "credentials.json")
+}
 
 // Setup connects to the Hue bridge and registers the username if needed.
 func Setup() (*hue.Bridge, error) {
@@ -69,7 +73,7 @@ type config struct {
 func GetConfig() (string, error) {
 	// See if the config exists.
 	if _, err := os.Stat(CREDENTIALS); os.IsNotExist(err) {
-		return "", errors.New("credentials.json does not exist")
+		return "", fmt.Errorf("%s does not exist", CREDENTIALS)
 	}
 
 	// Open the config file.

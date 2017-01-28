@@ -7,15 +7,12 @@ import (
 
 func init() {
 	registry.Register(
-		"random",
-		"Pick a random color for each light.",
+		"noop",
+		"Don't do anything (useful if you just want to set the brightness with -b)",
 		func(c registry.RuntimeConfig) error {
 			AllLights(c, func(light hue.Light) {
-				light.On()
 				light.SetBrightness(c.Brightness)
-				light.SetColor(RandomColor())
 			})
-
 			return nil
 		},
 	)
